@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var userService = require('../services/user-service.js');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -14,17 +15,18 @@ router.get('/create', function(req, res, next) {
 });
 
 router.post('/create', function(req, res, next) {
-	var error = false;
-	if (error){
-		vm = {
-			title: 'Create user',
-			input: req.body,
-			error: 'Big fat error'
+	userService.addUser(req.body, function(err){
+		if(err){
+			vm = {
+				title: 'Create user',
+				input: req.body,
+				error: err
+			}
+			delete vm.input.password;
+			return res.render('users/create', vm);
 		}
-		delete vm.input.password;
-		return res.render('users/create', vm);
-	}
-	res.redirect('/orders')
+		res.redirect('/orders');
+	});
 });
 
 module.exports = router;
